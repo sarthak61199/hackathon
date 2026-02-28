@@ -13,7 +13,7 @@ export default function TopBar() {
           <MapPin size={14} className="text-white" />
         </div>
         <span className="font-semibold text-zinc-50 tracking-tight">
-          Dining Map
+          Crumbs
         </span>
       </div>
 
