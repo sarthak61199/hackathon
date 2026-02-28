@@ -90,7 +90,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 2: Restaurant Detail Panel (~13 files)
+## ~~Phase 2: Restaurant Detail Panel (~13 files)~~ ✅ COMPLETE
 
 **Goal:** Click marker → sidebar (desktop) / bottom sheet (mobile) with restaurant details.
 
