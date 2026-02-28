@@ -1,23 +1,23 @@
-import { create } from 'zustand'
+import { create } from "zustand";
 
-type ActiveView = 'map' | 'list'
+type ActiveView = "map" | "list";
 
 interface AppState {
-  customerId: number | null
-  activeView: ActiveView
+  customerId: number | null;
+  activeView: ActiveView;
 }
 
 interface AppActions {
-  setCustomerId: (id: number) => void
-  setActiveView: (view: ActiveView) => void
+  setCustomerId: (id: number) => void;
+  setActiveView: (view: ActiveView) => void;
 }
 
-type AppStore = AppState & AppActions
+type AppStore = AppState & AppActions;
 
 export const useAppStore = create<AppStore>((set) => ({
-  customerId: null,
-  activeView: 'map',
+  customerId: 4217397,
+  activeView: "map",
 
   setCustomerId: (customerId) => set({ customerId }),
   setActiveView: (activeView) => set({ activeView }),
-}))
+}));
