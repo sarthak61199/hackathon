@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-surface: #18181b;
+  --color-surface-alt: #27272a;
+  --color-border-subtle: #3f3f46;
+  --color-text-primary: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-primary: #4f46e5;
+  --color-accent: #fbbf24;
+}
+
+html {
+  font-family: var(--font-sans);
+  color: #fafafa;
+  background-color: #09090b;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #52525b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #71717a; }
+
+/* Mapbox popup dark theme */
+.mapboxgl-popup-content {
+  background: #18181b !important;
+  color: #fafafa !important;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+}
+.mapboxgl-popup-tip { border-top-color: #18181b !important; }
