@@ -35,7 +35,7 @@ class CustomerVisitedRestaurantsService
                 'geometry' => [
                     'type' => 'Point',
                     'coordinates' => [
-                        (float) $row->longitude,
+                        (float) $row->longitude, // [lng, lat]
                         (float) $row->latitude,
                     ],
                 ],
@@ -44,8 +44,8 @@ class CustomerVisitedRestaurantsService
                     'name' => (string) $row->name,
                     'address' => (string) $row->address,
 
-                    // ✅ now from cuisines table
-                    'cuisine' => (string) $row->cuisine,
+                    // ✅ Cuisine comes from cuisines table (NOT categories)
+                    'cuisine' => $cuisineName,
                     // you said ignore all image data → always null
                     'cuisineIcon' => null,
 
@@ -82,10 +82,11 @@ class CustomerVisitedRestaurantsService
     }
 
     /**
-     * UPDATED: Join cuisines via restaurants_cuisines.
-     * We pick "primary cuisine" by lowest priority.
-     *
-     * This is MySQL-friendly using a derived table to get MIN(priority) per restaurant.
+     * Endpoint 1 DB query.
+     * - completed visits filter
+     * - completed payments join (paid_amount)
+     * - cuisine via cuisines + restaurants_cuisines (primary by min(priority))
+     * - category is NOT used for cuisine (kept separate conceptually)
      */
     private function fetchAggregatedRows(int $customerId): Collection
     {
@@ -109,7 +110,7 @@ class CustomerVisitedRestaurantsService
             ->leftJoin('chains as ch', 'r.chain_id', '=', 'ch.id')
             ->leftJoin('locations_data as ld', 'r.group_id', '=', 'ld.group_id')
 
-            // cuisines join (primary only)
+            // ✅ cuisine join
             ->leftJoinSub($primaryCuisineSub, 'pcr', function ($join) {
                 $join->on('pcr.restaurant_id', '=', 'r.id');
             })
@@ -139,6 +140,7 @@ class CustomerVisitedRestaurantsService
                 MAX(b.date) as last_visit,
                 MIN(b.date) as first_visit
             ')
+            // strict-mode safe group by
             ->groupBy(
                 'r.id',
                 'r.name',
@@ -178,19 +180,27 @@ class CustomerVisitedRestaurantsService
         foreach ($unique as $cuisine) {
             $map[$cuisine] = CuisineColorPalette::colorFor($cuisine);
         }
+
         return $map;
     }
 
+    /**
+     * ✅ Updated tiers per your spec:
+     * 1 (<=500), 2 (501-1000), 3 (1001-2000), 4 (2001+)
+     */
     private function priceTierFromCostForTwo(int $costForTwo): int
     {
         return match (true) {
-            $costForTwo <= 1000 => 1,
-            $costForTwo <= 2000 => 2,
-            $costForTwo <= 4000 => 3,
+            $costForTwo <= 500 => 1,
+            $costForTwo <= 1000 => 2,
+            $costForTwo <= 2000 => 3,
             default => 4,
         };
     }
 
+    /**
+     * Stable 0..100 score
+     */
     private function loyaltyScore(int $visitCount, float $totalSpent, ?Carbon $lastVisit): int
     {
         $visitComponent = log(1 + max(0, $visitCount)) * 18;
@@ -200,6 +210,7 @@ class CustomerVisitedRestaurantsService
         $recencyComponent = max(0, 40 - min(40, $daysSince));
 
         $score = $visitComponent + $spendComponent + $recencyComponent;
+
         return (int) max(0, min(100, round($score)));
     }
 }

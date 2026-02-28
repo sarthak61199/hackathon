@@ -11,11 +11,6 @@ class Restaurant extends Model
 {
     protected $table = 'restaurants';
 
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'category_id');
-    }
-
     public function chain(): BelongsTo
     {
         return $this->belongsTo(Chain::class, 'chain_id');
@@ -26,11 +21,18 @@ class Restaurant extends Model
         return $this->hasMany(Booking::class, 'restaurant_id');
     }
 
+    // ✅ category = restaurant category (NOT cuisine)
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    // ✅ cuisines = actual cuisines (many-to-many)
     public function cuisines(): BelongsToMany
     {
         return $this->belongsToMany(Cuisine::class, 'restaurants_cuisines', 'restaurant_id', 'cuisine_id')
             ->withPivot(['priority'])
             ->withTimestamps()
-            ->orderBy('restaurants_cuisines.priority'); // primary first
+            ->orderBy('restaurants_cuisines.priority');
     }
 }
