@@ -95,7 +95,7 @@ Building the React frontend for a dining history visualization app. The project 
 **Goal:** Click marker → sidebar (desktop) / bottom sheet (mobile) with restaurant details.
 
 ### UI Primitives
-34. **`Button.tsx`** — primary/secondary/ghost variants, sm/md sizes, active:scale-[0.97]
+34. **`Button.tsx`** — primary/secondary/ghost variants, sm/md sizes, active:scale-[0.97] using class-variance-authority
 35. **`Badge.tsx`** — cuisine pill with colored background
 36. **`Stat.tsx`** — label (text-xs text-zinc-400) + value (text-lg font-semibold tabular-nums)
 37. **`Divider.tsx`** — hr with optional centered label
