@@ -141,6 +141,7 @@ export default function MapCanvas() {
   const zoom = useMapStore((s) => s.zoom);
   const selectRestaurant = useMapStore((s) => s.selectRestaurant);
   const flyTo = useMapStore((s) => s.flyTo);
+  const dateRange = useMapStore((s) => s.dateRange);
 
   const { data: restaurantData } = useRestaurants(customerId);
 
@@ -268,7 +269,12 @@ export default function MapCanvas() {
           30,
           25 + ease * 22,
         ]);
-        map.setPaintProperty(L.pulse, "circle-stroke-opacity", 0.65 * (1 - t));
+        map.setPaintProperty(L.pulse, "circle-stroke-opacity", [
+          "case",
+          [">=", ["get", "opacity"], 1],
+          0.65 * (1 - t),
+          0,
+        ]);
 
         rafRef.current = requestAnimationFrame(animate);
       };
@@ -278,6 +284,31 @@ export default function MapCanvas() {
     if (map.isStyleLoaded()) setup();
     else map.once("style.load", setup);
   }, [restaurantData, selectRestaurant, flyTo]);
+
+  // ── Date range: fade out-of-range markers to opacity 0.1 ─────────────────
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !restaurantData) return;
+
+    const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+    if (!source) return;
+
+    const { start, end } = dateRange;
+
+    const filtered = {
+      ...restaurantData,
+      features: restaurantData.features.map((f) => {
+        const { firstVisit, lastVisit } = f.properties;
+        const inRange = lastVisit >= start && firstVisit <= end;
+        return {
+          ...f,
+          properties: { ...f.properties, opacity: inRange ? 1 : 0.1 },
+        };
+      }),
+    };
+
+    source.setData(filtered);
+  }, [dateRange, restaurantData]);
 
   // ── Fly to store center ───────────────────────────────────────────────────
   useEffect(() => {

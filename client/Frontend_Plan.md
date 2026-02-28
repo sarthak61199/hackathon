@@ -118,7 +118,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 3: Date Range Scrubber (~2 files + 1 modify)
+## ~~Phase 3: Date Range Scrubber (~2 files + 1 modify)~~ ✅ COMPLETE
 
 **Goal:** Dual-handle slider at map bottom. Markers outside range fade to 10% opacity. Client-side only.
 
