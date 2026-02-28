@@ -1,77 +1,195 @@
 export const CUISINE_COLORS: Record<string, string> = {
-  // Indian
-  'Indian': '#f97316',
-  'North Indian': '#f97316',
-  'South Indian': '#ea580c',
-  'Mughlai': '#c2410c',
-  'Biryani': '#fb923c',
-  'Punjabi': '#fdba74',
-
-  // Asian
-  'Chinese': '#ef4444',
-  'Japanese': '#dc2626',
-  'Thai': '#f87171',
-  'Korean': '#fca5a5',
-  'Asian': '#fecaca',
-  'Pan Asian': '#fca5a5',
-  'Sushi': '#dc2626',
-
-  // Western
-  'Italian': '#22c55e',
-  'Continental': '#16a34a',
-  'American': '#15803d',
-  'Mediterranean': '#86efac',
-  'French': '#4ade80',
-
-  // Cafe & Fast Food
-  'Cafe': '#a78bfa',
-  'Coffee': '#8b5cf6',
-  'Bakery': '#c4b5fd',
-  'Fast Food': '#7c3aed',
-  'Burger': '#6d28d9',
-  'Pizza': '#5b21b6',
-  'Sandwich': '#ede9fe',
-
-  // Seafood & BBQ
-  'Seafood': '#38bdf8',
-  'BBQ': '#0284c7',
-  'Grill': '#0ea5e9',
-
-  // Desserts & Drinks
-  'Desserts': '#f472b6',
-  'Ice Cream': '#ec4899',
-  'Juices': '#db2777',
-  'Bar': '#be185d',
-
-  // Other
-  'Street Food': '#fbbf24',
-  'Healthy': '#84cc16',
-  'Vegetarian': '#65a30d',
-  'Vegan': '#4d7c0f',
-}
+  "north indian": "#E76F51",
+  "south indian": "#2A9D8F",
+  italian: "#F4A261",
+  chinese: "#E63946",
+  japanese: "#457B9D",
+  thai: "#06D6A0",
+  mexican: "#F77F00",
+  continental: "#8D99AE",
+  "fast food": "#EF476F",
+  cafe: "#7F5539",
+  desserts: "#FFAFCC",
+  seafood: "#118AB2",
+  kebabs: "#B56576",
+  "pan asian": "#4D908E",
+  "middle eastern": "#F9C74F",
+  mediterranean: "#90BE6D",
+  "modern indian": "#F8961E",
+  multicuisine: "#577590",
+  andhra: "#E76F51",
+  assamese: "#E76F51",
+  awadhi: "#D94E1F",
+  bengali: "#E76F51",
+  biryani: "#F4A261",
+  bihari: "#E9C46A",
+  bohri: "#D94E1F",
+  chettinad: "#2A9D8F",
+  goan: "#E9C46A",
+  gujarati: "#F4A261",
+  hyderabadi: "#E76F51",
+  indian: "#E76F51",
+  kashmiri: "#D94E1F",
+  kerala: "#2A9D8F",
+  lucknowi: "#F4A261",
+  maharashtrian: "#E76F51",
+  mangalorean: "#2A9D8F",
+  malwani: "#E76F51",
+  manipuri: "#E9C46A",
+  mithai: "#F4A261",
+  "modern south indian": "#264653",
+  mughlai: "#9B2226",
+  naga: "#D00000",
+  nagaland: "#D00000",
+  "north eastern": "#E9C46A",
+  "north west frontier": "#9B2226",
+  odia: "#E76F51",
+  oriya: "#E76F51",
+  parsi: "#E9C46A",
+  punjabi: "#E76F51",
+  rajasthani: "#D94E1F",
+  "regional indian": "#E76F51",
+  "reimagined south indian": "#2A9D8F",
+  sindhi: "#F4A261",
+  "tamil nadu": "#2A9D8F",
+  "indian coastal cuisine": "#2A9D8F",
+  "progressive indian cuisine": "#F8961E",
+  asian: "#E63946",
+  burmese: "#F4A261",
+  cambodian: "#4D908E",
+  cantonese: "#E63946",
+  "dim sum": "#F4A261",
+  filipino: "#F4A261",
+  indonesian: "#D94E1F",
+  korean: "#D00000",
+  malaysian: "#E63946",
+  momos: "#F4A261",
+  nepalese: "#457B9D",
+  oriental: "#E63946",
+  sichuan: "#D00000",
+  singaporean: "#E63946",
+  sushi: "#1D3557",
+  "thai food": "#06D6A0",
+  tibetan: "#457B9D",
+  vietnamese: "#90BE6D",
+  afghani: "#C9A227",
+  arabian: "#F9C74F",
+  armenian: "#C9A227",
+  egyptian: "#F9C74F",
+  emirati: "#F9C74F",
+  iranian: "#F9C74F",
+  lebanese: "#90BE6D",
+  mandi: "#F9C74F",
+  moroccan: "#D94E1F",
+  pakistani: "#2A9D8F",
+  persian: "#F9C74F",
+  shawarma: "#F4A261",
+  syrian: "#F9C74F",
+  turkish: "#E76F51",
+  uzbek: "#457B9D",
+  american: "#3D405B",
+  australian: "#3D405B",
+  british: "#3D405B",
+  european: "#8D99AE",
+  french: "#8D99AE",
+  german: "#3D405B",
+  greek: "#118AB2",
+  irish: "#2A9D8F",
+  portuguese: "#E76F51",
+  russian: "#8D99AE",
+  spanish: "#E63946",
+  western: "#8D99AE",
+  brazilian: "#2A9D8F",
+  cuban: "#E76F51",
+  "latin american": "#E76F51",
+  peruvian: "#F4A261",
+  "south american": "#E76F51",
+  "tex-mex": "#F77F00",
+  bakery: "#D4A373",
+  barbeque: "#9B2226",
+  burgers: "#EF476F",
+  chaat: "#F4A261",
+  chicken: "#F4A261",
+  "club cuisine": "#577590",
+  confectionery: "#FFAFCC",
+  delicatessen: "#8D99AE",
+  dosa: "#F4A261",
+  "farm-to-table": "#90BE6D",
+  "finger food": "#EF476F",
+  fish: "#118AB2",
+  "fried chicken": "#F4A261",
+  fusion: "#577590",
+  healthy: "#90BE6D",
+  "healthy food": "#90BE6D",
+  kababs: "#B56576",
+  konkan: "#E76F51",
+  parathas: "#F4A261",
+  pasta: "#F4A261",
+  pizza: "#E63946",
+  "rolls & biryani": "#E76F51",
+  salad: "#90BE6D",
+  sandwiches: "#F4A261",
+  sizzlers: "#9B2226",
+  steaks: "#9B2226",
+  steakhouse: "#9B2226",
+  "street food": "#F4A261",
+  tapas: "#E63946",
+  vegan: "#90BE6D",
+  "chocolate boutique": "#5F0F40",
+  donut: "#FFAFCC",
+  "ice cream": "#FFAFCC",
+  beverages: "#7F5539",
+  "bubble tea": "#FFC8DD",
+  "cocktail menu": "#7209B7",
+  coffee: "#6F4E37",
+  "coffee and tea": "#6F4E37",
+  "cold drinks": "#4CC9F0",
+  "drinks only": "#4361EE",
+  juices: "#F72585",
+  milkshakes: "#FFC8DD",
+  paan: "#2A9D8F",
+  shakes: "#FFC8DD",
+  african: "#9B2226",
+  "all day dining": "#577590",
+  bangladeshi: "#006D32",
+  "casual eclectic": "#577590",
+  himalyan: "#8D99AE",
+  "sri lankan": "#E76F51",
+};
 
 const FALLBACK_COLORS = [
-  '#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f59e0b',
-  '#10b981', '#3b82f6', '#ef4444', '#84cc16', '#f97316',
-]
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#14b8a6",
+  "#f59e0b",
+  "#10b981",
+  "#3b82f6",
+  "#ef4444",
+  "#84cc16",
+  "#f97316",
+];
 
 export function getCuisineColor(cuisine: string): string {
-  if (!cuisine) return FALLBACK_COLORS[0]
-  const direct = CUISINE_COLORS[cuisine]
-  if (direct) return direct
+  if (!cuisine) return FALLBACK_COLORS[0];
+  const direct = CUISINE_COLORS[cuisine];
+  if (direct) return direct;
 
   // Partial match
-  const lower = cuisine.toLowerCase()
+  const lower = cuisine.toLowerCase();
   for (const [key, color] of Object.entries(CUISINE_COLORS)) {
-    if (lower.includes(key.toLowerCase()) || key.toLowerCase().includes(lower)) {
-      return color
+    if (
+      lower.includes(key.toLowerCase()) ||
+      key.toLowerCase().includes(lower)
+    ) {
+      return color;
     }
   }
 
   // Hash-based fallback for consistent colors per unknown cuisine
-  let hash = 0
+  let hash = 0;
   for (let i = 0; i < cuisine.length; i++) {
-    hash = cuisine.charCodeAt(i) + ((hash << 5) - hash)
+    hash = cuisine.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length]
+  return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length];
 }
