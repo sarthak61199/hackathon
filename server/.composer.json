@@ -1,0 +1,16 @@
+{
+  "name": "map_history/server",
+  "description": "Backend Service for the Frontend req.",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "eazydiner",
+      "email": "kanhaiya@example.com"
+    }
+  ],
+  "require": {
+    "laravel/laravel": "13.x",
+      "predis/predis": "^3.4"
+  }
+}
