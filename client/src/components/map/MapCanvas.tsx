@@ -245,6 +245,7 @@ export default function MapCanvas() {
     const map = mapRef.current;
     // Layer only exists after data loads — setup() syncs state for early toggles
     if (!map || !map.getLayer(L.heatmap)) return;
+    map.setPaintProperty(L.heatmap, "heatmap-opacity-transition", { duration: 300, delay: 0 });
     map.setPaintProperty(L.heatmap, "heatmap-opacity", showHeatmap ? 0.75 : 0);
   }, [showHeatmap]);
 
