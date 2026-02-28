@@ -132,7 +132,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 4: Clustering, Heatmap, Toolbar (~3 files + 1 modify)
+## ~~Phase 4: Clustering, Heatmap, Toolbar (~3 files + 1 modify)~~ ✅ COMPLETE
 
 **Goal:** Markers cluster at zoom < 13. Heatmap toggle overlay. Floating toolbar.
 
