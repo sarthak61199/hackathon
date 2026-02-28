@@ -36,52 +36,55 @@ export default function AnalyticsView() {
   )
 
   return (
-    <div
-      ref={containerRef}
-      className="h-full overflow-y-auto bg-zinc-950 scrollbar-thin scrollbar-thumb-zinc-700"
-    >
-      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <div className="relative h-full">
+      {/* Scrollable content */}
+      <div
+        ref={containerRef}
+        className="h-full overflow-y-auto bg-zinc-950 scrollbar-thin scrollbar-thumb-zinc-700"
+      >
+        <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
 
-        {/* Hero: Summary Card + Share */}
-        {summaryLoading ? (
-          <SummaryCardSkeleton />
-        ) : summary ? (
-          <div className="analytics-card">
-            <div className="flex items-start gap-3">
-              <div className="flex-1 min-w-0">
-                <SummaryCard data={summary} cardRef={summaryCardRef} />
+          {/* Hero: Summary Card */}
+          {summaryLoading ? (
+            <SummaryCardSkeleton />
+          ) : summary ? (
+            <div className="analytics-card">
+              <SummaryCard data={summary} cardRef={summaryCardRef} />
+            </div>
+          ) : null}
+
+          {/* Charts grid */}
+          {analyticsLoading ? (
+            <ChartsGridSkeleton />
+          ) : analytics ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="xl:col-span-1">
+                <CuisineSpendChart data={analytics.spendByCuisine} />
               </div>
-              <div className="shrink-0 pt-1">
-                <ShareButton cardRef={summaryCardRef} />
+              <div className="xl:col-span-2">
+                <NeighborhoodSpendChart data={analytics.spendByNeighborhood} />
+              </div>
+              <div className="xl:col-span-1">
+                <DayOfWeekChart data={analytics.visitsByDayOfWeek} />
+              </div>
+              <div className="xl:col-span-1">
+                <TimeOfDayChart data={analytics.visitsByTimeSlot} />
+              </div>
+              <div className="md:col-span-2 xl:col-span-1">
+                <MonthlySpendChart data={analytics.monthlySpendTrend} />
               </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
 
-        {/* Charts grid */}
-        {analyticsLoading ? (
-          <ChartsGridSkeleton />
-        ) : analytics ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            <div className="xl:col-span-1">
-              <CuisineSpendChart data={analytics.spendByCuisine} />
-            </div>
-            <div className="xl:col-span-2">
-              <NeighborhoodSpendChart data={analytics.spendByNeighborhood} />
-            </div>
-            <div className="xl:col-span-1">
-              <DayOfWeekChart data={analytics.visitsByDayOfWeek} />
-            </div>
-            <div className="xl:col-span-1">
-              <TimeOfDayChart data={analytics.visitsByTimeSlot} />
-            </div>
-            <div className="md:col-span-2 xl:col-span-1">
-              <MonthlySpendChart data={analytics.monthlySpendTrend} />
-            </div>
-          </div>
-        ) : null}
-
+        </div>
       </div>
+
+      {/* Floating share button — bottom right */}
+      {summary && (
+        <div className="absolute bottom-6 right-6 z-10">
+          <ShareButton cardRef={summaryCardRef} />
+        </div>
+      )}
     </div>
   )
 }

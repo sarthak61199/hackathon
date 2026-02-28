@@ -1,25 +1,25 @@
-import type { RefObject } from 'react'
-import { toPng } from 'html-to-image'
-import toast from 'react-hot-toast'
-import { Share2 } from 'lucide-react'
-import IconButton from '../ui/IconButton'
+import type { RefObject } from "react";
+import { toPng } from "html-to-image";
+import toast from "react-hot-toast";
+import { Share2 } from "lucide-react";
+import IconButton from "../ui/IconButton";
 
 interface ShareButtonProps {
-  cardRef: RefObject<HTMLDivElement>
+  cardRef: RefObject<HTMLDivElement>;
 }
 
 export default function ShareButton({ cardRef }: ShareButtonProps) {
   async function handleShare() {
-    if (!cardRef.current) return
+    if (!cardRef.current) return;
     try {
-      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 })
-      const link = document.createElement('a')
-      link.download = 'my-dining-year.png'
-      link.href = dataUrl
-      link.click()
-      toast.success('Dining card downloaded!')
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 });
+      const link = document.createElement("a");
+      link.download = "my-dining-year.png";
+      link.href = dataUrl;
+      link.click();
+      toast.success("Dining card downloaded!");
     } catch {
-      toast.error('Could not export image')
+      toast.error("Could not export image");
     }
   }
 
@@ -28,7 +28,8 @@ export default function ShareButton({ cardRef }: ShareButtonProps) {
       icon={Share2}
       label="Share dining card"
       onClick={handleShare}
-      className="bg-indigo-600 hover:bg-indigo-500 text-white"
+      className="bg-indigo-600 hover:bg-indigo-500 text-white size-16"
+      size="md"
     />
-  )
+  );
 }
