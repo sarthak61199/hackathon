@@ -763,6 +763,7 @@ Route::get('restaurants/{restaurantId}/detail', [RestaurantController::class, 'd
 | Routing | `react-router` | Client-side routing between map and analytics views |
 | HTTP client | `axios` | Cleaner API calls with interceptors and base URL config |
 | Styling | `tailwindcss` + `@tailwindcss/vite` | Utility-first CSS — fast styling for hackathon pace |
+| Class merging | `clsx` + `tailwind-merge` | `clsx` for conditional class logic, `tailwind-merge` to resolve conflicting Tailwind classes. Combined into a `cn()` utility used across all components |
 | Icons | `lucide-react` | Clean, consistent icon set (search, toggle, close, share, etc.) |
 | Animations | `gsap` + `@gsap/react` | Performant timeline-based animations, Draggable plugin for bottom sheet. `@gsap/react` provides `useGSAP` hook for proper React lifecycle integration and auto-cleanup |
 | Toast notifications | `react-hot-toast` | Lightweight toasts for error/success feedback |
@@ -807,7 +808,7 @@ components/
   nav/        → SearchBar.tsx, ViewToggle.tsx, NavLinks.tsx
 pages/        → MapView.tsx, AnalyticsView.tsx
 types/        → restaurant.ts, analytics.ts, geojson.ts
-utils/        → colors.ts, format.ts, geo.ts
+utils/        → colors.ts, format.ts, geo.ts, cn.ts
 App.tsx, router.tsx, main.tsx
 ```
 
