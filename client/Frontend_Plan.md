@@ -9,7 +9,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 0: Project Foundation (~29 files)
+## ~~Phase 0: Project Foundation (~29 files)~~ ✅ COMPLETE
 
 **Goal:** Tailwind v4 working, fonts loaded, dark theme renders, routing shell, stores, API layer with mock data. `npm run dev` shows dark page with TopBar and two routes.
 
