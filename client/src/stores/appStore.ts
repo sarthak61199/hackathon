@@ -14,8 +14,8 @@ interface AppActions {
 
 type AppStore = AppState & AppActions;
 
-export const useAppStore = create<AppStore>((set) => ({
-  customerId: 4217397,
+export const useAppStore = create<AppStore>()((set) => ({
+  customerId: null,
   activeView: "map",
 
   setCustomerId: (customerId) => set({ customerId }),

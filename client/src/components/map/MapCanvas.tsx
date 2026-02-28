@@ -110,12 +110,12 @@ function addMarkerLayers(map: mapboxgl.Map) {
     },
   });
 
-  // 4. Pulse ring — animated expanding stroke (5+ visits)
+  // 4. Pulse ring — animated expanding stroke (3+ visits)
   map.addLayer({
     id: L.pulse,
     type: "circle",
     source: SOURCE_ID,
-    filter: [">=", ["get", "visitCount"], 5],
+    filter: [">=", ["get", "visitCount"], 3],
     paint: {
       "circle-radius": 13, // driven by RAF each frame
       "circle-opacity": 0, // fill invisible — stroke only
@@ -290,7 +290,9 @@ export default function MapCanvas() {
     const map = mapRef.current;
     if (!map || !restaurantData) return;
 
-    const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+    const source = map.getSource(SOURCE_ID) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
     if (!source) return;
 
     const { start, end } = dateRange;
