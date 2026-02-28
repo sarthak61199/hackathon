@@ -1,7 +1,11 @@
+import MapCanvas from '../components/map/MapCanvas'
+import CuisineLegend from '../components/map/CuisineLegend'
+
 export default function MapView() {
   return (
-    <div className="h-full bg-zinc-950 flex items-center justify-center text-zinc-500 text-sm">
-      Map View — Phase 1
+    <div className="relative h-full w-full overflow-hidden">
+      <MapCanvas />
+      <CuisineLegend />
     </div>
   )
 }
