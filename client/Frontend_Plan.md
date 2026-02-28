@@ -69,7 +69,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 1: Mapbox Map with Markers (~3 files)
+## ~~Phase 1: Mapbox Map with Markers (~3 files)~~ ✅ COMPLETE
 
 **Goal:** Interactive map fills viewport below TopBar. Colored, sized markers from API/mock data. Auto-fit bounds.
 
