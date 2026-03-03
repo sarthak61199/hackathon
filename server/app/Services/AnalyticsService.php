@@ -2,28 +2,29 @@
 
 namespace App\Services;
 
+use App\Support\CacheKeys;
 use App\Support\CuisineColorPalette;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class AnalyticsService
 {
     public function buildAnalyticsPayload(int $customerId): array
     {
-        $spendByCuisine = $this->spendByCuisine($customerId);
-        $spendByNeighborhood = $this->spendByNeighborhood($customerId);
-        $visitsByDayOfWeek = $this->visitsByDayOfWeek($customerId);
-        $visitsByTimeSlot = $this->visitsByTimeSlot($customerId);
-        $monthlySpendTrend = $this->monthlySpendTrend($customerId);
+        $ttl = now()->addDay();
 
-        return [
-            'spendByCuisine' => $spendByCuisine,
-            'spendByNeighborhood' => $spendByNeighborhood,
-            'visitsByDayOfWeek' => $visitsByDayOfWeek,
-            'visitsByTimeSlot' => $visitsByTimeSlot,
-            'monthlySpendTrend' => $monthlySpendTrend,
-        ];
+        return Cache::tags(["customer:{$customerId}", 'endpoint:analytics'])
+            ->remember(CacheKeys::customerAnalytics($customerId), $ttl, function () use ($customerId) {
+                return [
+                    'spendByCuisine' => $this->spendByCuisine($customerId),
+                    'spendByNeighborhood' => $this->spendByNeighborhood($customerId),
+                    'visitsByDayOfWeek' => $this->visitsByDayOfWeek($customerId),
+                    'visitsByTimeSlot' => $this->visitsByTimeSlot($customerId),
+                    'monthlySpendTrend' => $this->monthlySpendTrend($customerId),
+                ];
+            });
     }
 
     /**

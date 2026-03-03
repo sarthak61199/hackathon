@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Support\CacheKeys;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CustomerHistoryService
@@ -16,62 +18,67 @@ class CustomerHistoryService
      */
     public function buildHistoryPayload(int $customerId, ?string $from, ?string $to, ?int $restaurantId): array
     {
-        $query = $this->baseQuery($customerId);
+        $ttl = now()->addHours(6);
 
-        if ($from) {
-            $query->where('b.date', '>=', $from);
-        }
-        if ($to) {
-            $query->where('b.date', '<=', $to);
-        }
-        if ($restaurantId) {
-            $query->where('b.restaurant_id', '=', $restaurantId);
-        }
+        return Cache::tags(["customer:{$customerId}", 'endpoint:history'])
+            ->remember(CacheKeys::customerHistory($customerId, $from, $to, $restaurantId), $ttl, function () use ($customerId, $from, $to, $restaurantId) {
+                $query = $this->baseQuery($customerId);
 
-        // rows
-        $rows = $query
-            ->orderByDesc('b.date')
-            ->orderByDesc('b.time')
-            ->get();
+                if ($from) {
+                    $query->where('b.date', '>=', $from);
+                }
+                if ($to) {
+                    $query->where('b.date', '<=', $to);
+                }
+                if ($restaurantId) {
+                    $query->where('b.restaurant_id', '=', $restaurantId);
+                }
 
-        $data = $rows->map(function ($r) {
-            return [
-                'id' => (int) $r->id,
-                'restaurantId' => (int) $r->restaurant_id,
-                'restaurantName' => (string) $r->restaurant_name,
+                // rows
+                $rows = $query
+                    ->orderByDesc('b.date')
+                    ->orderByDesc('b.time')
+                    ->get();
 
-                // ✅ cuisine from cuisines table (primary)
-                'cuisine' => (string) ($r->cuisine ?? ''),
+                $data = $rows->map(function ($r) {
+                    return [
+                        'id' => (int) $r->id,
+                        'restaurantId' => (int) $r->restaurant_id,
+                        'restaurantName' => (string) $r->restaurant_name,
 
-                'date' => $r->date ? Carbon::parse($r->date)->toDateString() : '',
-                'time' => $r->time ? (string) $r->time : '',
-                'pax' => (int) $r->pax,
-                'children' => (int) $r->children,
-                'deal' => (string) ($r->deal ?? ''),
+                        // ✅ cuisine from cuisines table (primary)
+                        'cuisine' => (string) ($r->cuisine ?? ''),
 
-                'billAmount' => $r->bill_amount !== null ? (float) $r->bill_amount : null,
-                'paidAmount' => $r->paid_amount !== null ? (float) $r->paid_amount : null,
-                'walletAmount' => $r->wallet_amount !== null ? (float) $r->wallet_amount : null,
-                'dealDiscount' => $r->deal_discount_amount !== null ? (float) $r->deal_discount_amount : null,
-                'tipAmount' => $r->tip_amount !== null ? (float) $r->tip_amount : null,
-                'couponAmount' => $r->coupon_amount !== null ? (float) $r->coupon_amount : null,
-            ];
-        })->values();
+                        'date' => $r->date ? Carbon::parse($r->date)->toDateString() : '',
+                        'time' => $r->time ? (string) $r->time : '',
+                        'pax' => (int) $r->pax,
+                        'children' => (int) $r->children,
+                        'deal' => (string) ($r->deal ?? ''),
 
-        // meta totals:
-        // Spec says: totalSpent = SUM of paid_amount across all results
-        // If paid_amount is NULL (no completed txn), it contributes 0.
-        $totalSpent = (float) $rows->sum(function ($r) {
-            return $r->paid_amount !== null ? (float) $r->paid_amount : 0.0;
-        });
+                        'billAmount' => $r->bill_amount !== null ? (float) $r->bill_amount : null,
+                        'paidAmount' => $r->paid_amount !== null ? (float) $r->paid_amount : null,
+                        'walletAmount' => $r->wallet_amount !== null ? (float) $r->wallet_amount : null,
+                        'dealDiscount' => $r->deal_discount_amount !== null ? (float) $r->deal_discount_amount : null,
+                        'tipAmount' => $r->tip_amount !== null ? (float) $r->tip_amount : null,
+                        'couponAmount' => $r->coupon_amount !== null ? (float) $r->coupon_amount : null,
+                    ];
+                })->values();
 
-        return [
-            'data' => $data,
-            'meta' => [
-                'total' => $data->count(),
-                'totalSpent' => $totalSpent,
-            ],
-        ];
+                // meta totals:
+                // Spec says: totalSpent = SUM of paid_amount across all results
+                // If paid_amount is NULL (no completed txn), it contributes 0.
+                $totalSpent = (float) $rows->sum(function ($r) {
+                    return $r->paid_amount !== null ? (float) $r->paid_amount : 0.0;
+                });
+
+                return [
+                    'data' => $data,
+                    'meta' => [
+                        'total' => $data->count(),
+                        'totalSpent' => $totalSpent,
+                    ],
+                ];
+            });
     }
 
     /**

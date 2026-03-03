@@ -2,83 +2,92 @@
 
 namespace App\Services;
 
+use App\Support\CacheKeys;
 use App\Support\CuisineColorPalette;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class CustomerVisitedRestaurantsService
 {
     public function buildGeoJsonPayload(int $customerId): array
     {
-        $rows = $this->fetchAggregatedRows($customerId);
+        $ttl = now()->addDay();
 
-        $features = $rows->map(function ($row) {
-            $cuisineName = (string) ($row->cuisine ?? '');
-            $cuisineColor = CuisineColorPalette::colorFor($cuisineName);
+        // If you want tags (recommended):
+        return Cache::tags(["customer:{$customerId}", 'endpoint:restaurants_geojson'])
+            ->remember(CacheKeys::customerRestaurantsGeoJson($customerId), $ttl, function () use ($customerId) {
+                $rows = $this->fetchAggregatedRows($customerId);
 
-            $costForTwo = (int) $row->cost_for_two;
-            $priceTier = $this->priceTierFromCostForTwo($costForTwo);
+                $features = $rows->map(function ($row) {
+                    $cuisineName = (string) ($row->cuisine ?? '');
+                    $cuisineColor = CuisineColorPalette::colorFor($cuisineName);
 
-            $visitCount = (int) $row->visit_count;
-            $totalSpent = (float) $row->total_spent;
-            $lastVisit = $row->last_visit ? Carbon::parse($row->last_visit) : null;
+                    $costForTwo = (int) $row->cost_for_two;
+                    $priceTier = $this->priceTierFromCostForTwo($costForTwo);
 
-            $loyaltyScore = $this->loyaltyScore(
-                visitCount: $visitCount,
-                totalSpent: $totalSpent,
-                lastVisit: $lastVisit
-            );
+                    $visitCount = (int) $row->visit_count;
+                    $totalSpent = (float) $row->total_spent;
+                    $lastVisit = $row->last_visit ? Carbon::parse($row->last_visit) : null;
 
-            return [
-                'type' => 'Feature',
-                'geometry' => [
-                    'type' => 'Point',
-                    'coordinates' => [
-                        (float) $row->longitude, // [lng, lat]
-                        (float) $row->latitude,
+                    $loyaltyScore = $this->loyaltyScore(
+                        visitCount: $visitCount,
+                        totalSpent: $totalSpent,
+                        lastVisit: $lastVisit
+                    );
+
+                    return [
+                        'type' => 'Feature',
+                        'geometry' => [
+                            'type' => 'Point',
+                            'coordinates' => [
+                                (float) $row->longitude, // [lng, lat]
+                                (float) $row->latitude,
+                            ],
+                        ],
+                        'properties' => [
+                            'id' => (int) $row->id,
+                            'name' => (string) $row->name,
+                            'address' => (string) $row->address,
+
+                            // ✅ Cuisine comes from cuisines table (NOT categories)
+                            'cuisine' => $cuisineName,
+                            // you said ignore all image data → always null
+                            'cuisineIcon' => null,
+
+                            'cuisineColor' => $cuisineColor,
+                            'chainName' => $row->chain_name ? (string) $row->chain_name : null,
+                            'neighborhood' => $row->neighborhood ? (string) $row->neighborhood : null,
+                            'cityName' => (string) ($row->city_name ?? ''),
+                            'costForTwo' => $costForTwo,
+                            'priceTier' => $priceTier,
+                            'logo' => $row->logo ? (string) $row->logo : null,
+                            'visitCount' => $visitCount,
+                            'totalSpent' => (float) $row->total_spent,
+                            'avgSpent' => (float) $row->avg_spent,
+                            'lastVisit' => $row->last_visit ? Carbon::parse($row->last_visit)->toDateString() : '',
+                            'firstVisit' => $row->first_visit ? Carbon::parse($row->first_visit)->toDateString() : '',
+                            'loyaltyScore' => $loyaltyScore,
+                            'opacity' => 1.0,
+                        ],
+                    ];
+                })->values();
+
+                $dateRange = $this->computeDateRange($rows);
+                $cuisineColorMap = $this->computeCuisineColorMap($rows);
+
+                return [
+                    'type' => 'FeatureCollection',
+                    'features' => $features,
+                    'meta' => [
+                        'totalRestaurants' => $features->count(),
+                        'dateRange' => $dateRange,
+                        'cuisineColorMap' => $cuisineColorMap,
                     ],
-                ],
-                'properties' => [
-                    'id' => (int) $row->id,
-                    'name' => (string) $row->name,
-                    'address' => (string) $row->address,
+                ];
+            });
 
-                    // ✅ Cuisine comes from cuisines table (NOT categories)
-                    'cuisine' => $cuisineName,
-                    // you said ignore all image data → always null
-                    'cuisineIcon' => null,
-
-                    'cuisineColor' => $cuisineColor,
-                    'chainName' => $row->chain_name ? (string) $row->chain_name : null,
-                    'neighborhood' => $row->neighborhood ? (string) $row->neighborhood : null,
-                    'cityName' => (string) ($row->city_name ?? ''),
-                    'costForTwo' => $costForTwo,
-                    'priceTier' => $priceTier,
-                    'logo' => $row->logo ? (string) $row->logo : null,
-                    'visitCount' => $visitCount,
-                    'totalSpent' => (float) $row->total_spent,
-                    'avgSpent' => (float) $row->avg_spent,
-                    'lastVisit' => $row->last_visit ? Carbon::parse($row->last_visit)->toDateString() : '',
-                    'firstVisit' => $row->first_visit ? Carbon::parse($row->first_visit)->toDateString() : '',
-                    'loyaltyScore' => $loyaltyScore,
-                    'opacity' => 1.0,
-                ],
-            ];
-        })->values();
-
-        $dateRange = $this->computeDateRange($rows);
-        $cuisineColorMap = $this->computeCuisineColorMap($rows);
-
-        return [
-            'type' => 'FeatureCollection',
-            'features' => $features,
-            'meta' => [
-                'totalRestaurants' => $features->count(),
-                'dateRange' => $dateRange,
-                'cuisineColorMap' => $cuisineColorMap,
-            ],
-        ];
     }
 
     /**

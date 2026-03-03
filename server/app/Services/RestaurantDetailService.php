@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Support\CacheKeys;
 use App\Support\CuisineColorPalette;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 readonly class RestaurantDetailService
@@ -15,56 +17,61 @@ readonly class RestaurantDetailService
 
     public function buildRestaurantDetailPayload(int $restaurantId, int $customerId): array
     {
-        $restaurant = $this->fetchRestaurantBase($restaurantId);
-        $stats = $this->fetchCustomerStats($restaurantId, $customerId);
-        $timeline = $this->fetchSpendTimeline($restaurantId, $customerId);
-        $favouriteDeal = $this->fetchFavouriteDeal($restaurantId, $customerId);
+        $ttl = now()->addDay();
 
-        $costForTwo = (int) ($restaurant->cost_for_two ?? 0);
-        $priceTier = $this->priceTierFromCostForTwo($costForTwo);
+        return Cache::tags(["customer:{$customerId}", "restaurant:{$restaurantId}", 'endpoint:restaurant_detail'])
+            ->remember(CacheKeys::restaurantDetail($restaurantId, $customerId), $ttl, function () use ($restaurantId, $customerId) {
+                $restaurant = $this->fetchRestaurantBase($restaurantId);
+                $stats = $this->fetchCustomerStats($restaurantId, $customerId);
+                $timeline = $this->fetchSpendTimeline($restaurantId, $customerId);
+                $favouriteDeal = $this->fetchFavouriteDeal($restaurantId, $customerId);
 
-        $cuisine = (string) ($restaurant->cuisine ?? '');
-        $cuisineColor = CuisineColorPalette::colorFor($cuisine);
+                $costForTwo = (int) ($restaurant->cost_for_two ?? 0);
+                $priceTier = $this->priceTierFromCostForTwo($costForTwo);
 
-        $lastVisit = $stats['lastVisit'] ? Carbon::parse($stats['lastVisit']) : null;
+                $cuisine = (string) ($restaurant->cuisine ?? '');
+                $cuisineColor = CuisineColorPalette::colorFor($cuisine);
 
-        $loyaltyScore = $this->loyaltyScoreService->score(
-            visitCount: (int) $stats['visitCount'],
-            totalSpent: (float) $stats['totalSpent'],
-            lastVisit: $lastVisit
-        );
+                $lastVisit = $stats['lastVisit'] ? Carbon::parse($stats['lastVisit']) : null;
 
-        return [
-            'id' => (int) $restaurant->id,
-            'name' => (string) $restaurant->name,
-            'cuisine' => $cuisine,
-            'cuisineIcon' => null, // ignore image data as requested
-            'chainName' => $restaurant->chain_name ? (string) $restaurant->chain_name : null,
-            'address' => (string) $restaurant->address,
-            'neighborhood' => $restaurant->neighborhood ? (string) $restaurant->neighborhood : null,
-            'area' => $restaurant->area ? (string) $restaurant->area : null,
-            'cityName' => (string) ($restaurant->city_name ?? ''),
-            'costForTwo' => $costForTwo,
-            'priceTier' => $priceTier,
-            'logo' => $restaurant->logo ? (string) $restaurant->logo : null,
-            'coordinates' => [
-                (float) $restaurant->longitude,
-                (float) $restaurant->latitude,
-            ],
+                $loyaltyScore = $this->loyaltyScoreService->score(
+                    visitCount: (int) $stats['visitCount'],
+                    totalSpent: (float) $stats['totalSpent'],
+                    lastVisit: $lastVisit
+                );
 
-            'customerStats' => [
-                'visitCount' => (int) $stats['visitCount'],
-                'totalSpent' => (float) $stats['totalSpent'],
-                'avgSpent' => (float) $stats['avgSpent'],
-                'lastVisit' => (string) ($stats['lastVisit'] ?? ''),
-                'firstVisit' => (string) ($stats['firstVisit'] ?? ''),
-                'loyaltyScore' => $loyaltyScore,
-                'avgPax' => (float) $stats['avgPax'],
-                'totalSavings' => (float) $stats['totalSavings'],
-                'favouriteDeal' => $favouriteDeal,
-                'spendTimeline' => $timeline,
-            ],
-        ];
+                return [
+                    'id' => (int) $restaurant->id,
+                    'name' => (string) $restaurant->name,
+                    'cuisine' => $cuisine,
+                    'cuisineIcon' => null, // ignore image data as requested
+                    'chainName' => $restaurant->chain_name ? (string) $restaurant->chain_name : null,
+                    'address' => (string) $restaurant->address,
+                    'neighborhood' => $restaurant->neighborhood ? (string) $restaurant->neighborhood : null,
+                    'area' => $restaurant->area ? (string) $restaurant->area : null,
+                    'cityName' => (string) ($restaurant->city_name ?? ''),
+                    'costForTwo' => $costForTwo,
+                    'priceTier' => $priceTier,
+                    'logo' => $restaurant->logo ? (string) $restaurant->logo : null,
+                    'coordinates' => [
+                        (float) $restaurant->longitude,
+                        (float) $restaurant->latitude,
+                    ],
+
+                    'customerStats' => [
+                        'visitCount' => (int) $stats['visitCount'],
+                        'totalSpent' => (float) $stats['totalSpent'],
+                        'avgSpent' => (float) $stats['avgSpent'],
+                        'lastVisit' => (string) ($stats['lastVisit'] ?? ''),
+                        'firstVisit' => (string) ($stats['firstVisit'] ?? ''),
+                        'loyaltyScore' => $loyaltyScore,
+                        'avgPax' => (float) $stats['avgPax'],
+                        'totalSavings' => (float) $stats['totalSavings'],
+                        'favouriteDeal' => $favouriteDeal,
+                        'spendTimeline' => $timeline,
+                    ],
+                ];
+            });
     }
 
     /**

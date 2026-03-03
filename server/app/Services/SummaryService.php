@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Support\CacheKeys;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SummaryService
@@ -9,32 +11,36 @@ class SummaryService
     public function buildSummaryPayload($customer): array
     {
         $customerId = (int) $customer->id;
+        $ttl = now()->addDay();
 
-        $totals = $this->totals($customerId);
-        $topRestaurant = $this->topRestaurant($customerId);
-        $topCuisine = $this->topCuisine($customerId);
-        $topNeighborhood = $this->topNeighborhood($customerId);
-        $newVsRevisit = $this->newVsRevisit($customerId);
+        return Cache::tags(["customer:{$customerId}", 'endpoint:summary'])
+            ->remember(CacheKeys::customerSummary($customerId), $ttl, function () use ($customer, $customerId) {
+                $totals = $this->totals($customerId);
+                $topRestaurant = $this->topRestaurant($customerId);
+                $topCuisine = $this->topCuisine($customerId);
+                $topNeighborhood = $this->topNeighborhood($customerId);
+                $newVsRevisit = $this->newVsRevisit($customerId);
 
-        $avgSpendPerVisit = $totals['totalVisits'] > 0
-            ? round($totals['totalSpent'] / $totals['totalVisits'], 2)
-            : 0.0;
+                $avgSpendPerVisit = $totals['totalVisits'] > 0
+                    ? round($totals['totalSpent'] / $totals['totalVisits'], 2)
+                    : 0.0;
 
-        return [
-            'customerName' => (string) ($customer->name ?? ''),
-            'totalVisits' => $totals['totalVisits'],
-            'totalSpent' => $totals['totalSpent'],
-            'uniqueRestaurants' => $totals['uniqueRestaurants'],
-            'avgSpendPerVisit' => (float) $avgSpendPerVisit,
+                return [
+                    'customerName' => (string) ($customer->name ?? ''),
+                    'totalVisits' => $totals['totalVisits'],
+                    'totalSpent' => $totals['totalSpent'],
+                    'uniqueRestaurants' => $totals['uniqueRestaurants'],
+                    'avgSpendPerVisit' => (float) $avgSpendPerVisit,
 
-            'topRestaurant' => $topRestaurant,
-            'topCuisine' => $topCuisine,
-            'topNeighborhood' => $topNeighborhood,
-            'newVsRevisit' => $newVsRevisit,
+                    'topRestaurant' => $topRestaurant,
+                    'topCuisine' => $topCuisine,
+                    'topNeighborhood' => $topNeighborhood,
+                    'newVsRevisit' => $newVsRevisit,
 
-            'avgPax' => $totals['avgPax'],
-            'totalSavings' => $totals['totalSavings'],
-        ];
+                    'avgPax' => $totals['avgPax'],
+                    'totalSavings' => $totals['totalSavings'],
+                ];
+            });
     }
 
     /**
