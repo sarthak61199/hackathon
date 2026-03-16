@@ -5,7 +5,7 @@ import { useAppStore } from "../../stores/appStore";
 import Card from "../ui/Card";
 
 export default function CuisineLegend() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const customerId = useAppStore((s) => s.customerId);
   const { data } = useRestaurants(customerId);
 
@@ -15,7 +15,7 @@ export default function CuisineLegend() {
   const entries = Object.entries(colorMap);
 
   return (
-    <Card className="absolute bottom-4 left-4 p-3 max-w-[160px] z-10">
+    <Card className="absolute top-4 left-4 p-3 max-w-[160px] z-10">
       <button
         onClick={() => setCollapsed((c) => !c)}
         className="flex items-center justify-between w-full text-[10px] text-zinc-400 font-medium uppercase tracking-wider mb-2 hover:text-zinc-200 transition-colors"

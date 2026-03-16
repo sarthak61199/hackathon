@@ -90,7 +90,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 2: Restaurant Detail Panel (~13 files)
+## ~~Phase 2: Restaurant Detail Panel (~13 files)~~ ✅ COMPLETE
 
 **Goal:** Click marker → sidebar (desktop) / bottom sheet (mobile) with restaurant details.
 
@@ -118,7 +118,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 3: Date Range Scrubber (~2 files + 1 modify)
+## ~~Phase 3: Date Range Scrubber (~2 files + 1 modify)~~ ✅ COMPLETE
 
 **Goal:** Dual-handle slider at map bottom. Markers outside range fade to 10% opacity. Client-side only.
 
@@ -132,7 +132,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 4: Clustering, Heatmap, Toolbar (~3 files + 1 modify)
+## ~~Phase 4: Clustering, Heatmap, Toolbar (~3 files + 1 modify)~~ ✅ COMPLETE
 
 **Goal:** Markers cluster at zoom < 13. Heatmap toggle overlay. Floating toolbar.
 
@@ -152,7 +152,7 @@ Building the React frontend for a dining history visualization app. The project 
 
 ---
 
-## Phase 5: Analytics Dashboard (~8 files)
+## ~~Phase 5: Analytics Dashboard (~8 files)~~ ✅ COMPLETE
 
 **Goal:** `/analytics` shows summary hero card + 5 chart types in responsive grid with GSAP stagger animation.
 
@@ -172,7 +172,7 @@ All charts: dark custom tooltip, ResponsiveContainer, Card wrapper, GSAP fade-in
 
 ---
 
-## Phase 6: Search, List View, Polish (~11 files)
+## ~~Phase 6: Search, List View, Polish (~11 files)~~ ✅ COMPLETE
 
 **Goal:** Search with autocomplete + fly-to, restaurant list view, finalized TopBar, page transitions.
 
@@ -211,4 +211,4 @@ All charts: dark custom tooltip, ResponsiveContainer, Card wrapper, GSAP fade-in
 3. Delete `mockData.ts`
 4. Test each endpoint
 
-## Total Files: ~72 (create ~65, modify ~7)
+## Total Files: ~72 (create ~65, modify ~7) ✅ COMPLETE
