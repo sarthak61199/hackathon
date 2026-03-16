@@ -21,7 +21,7 @@ export default function AppLayout() {
       setCustomerId(Number(id));
     } else {
       // Default customer for demo
-      setCustomerId(272094);
+      setCustomerId(2982118);
     }
   }, [params, setCustomerId]);
 

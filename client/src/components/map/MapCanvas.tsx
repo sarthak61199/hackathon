@@ -122,7 +122,10 @@ export default function MapCanvas() {
         if (!e.features?.length) return;
         const feature = e.features[0];
         const clusterId = feature.properties?.cluster_id as number;
-        const coords = (feature.geometry as GeoJSON.Point).coordinates as [number, number];
+        const coords = (feature.geometry as GeoJSON.Point).coordinates as [
+          number,
+          number,
+        ];
         const source = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource;
         source.getClusterExpansionZoom(clusterId, (err, expansionZoom) => {
           if (err || expansionZoom === null) return;
@@ -184,14 +187,16 @@ export default function MapCanvas() {
         }
 
         const t = (Date.now() % 2000) / 2000; // 0 → 1 every 2 s
-        const ease = 1 - (1 - t) * (1 - t);   // ease-out quad
+        const ease = 1 - (1 - t) * (1 - t); // ease-out quad
 
         map.setPaintProperty(L.pulse, "circle-radius", [
           "interpolate",
           ["linear"],
           ["get", "visitCount"],
-          5,  13 + ease * 22,
-          30, 25 + ease * 22,
+          5,
+          13 + ease * 22,
+          30,
+          25 + ease * 22,
         ]);
         map.setPaintProperty(L.pulse, "circle-stroke-opacity", [
           "case",
@@ -216,7 +221,9 @@ export default function MapCanvas() {
     const map = mapRef.current;
     if (!map || !restaurantData) return;
 
-    const mainSource = map.getSource(SOURCE_ID) as mapboxgl.GeoJSONSource | undefined;
+    const mainSource = map.getSource(SOURCE_ID) as
+      | mapboxgl.GeoJSONSource
+      | undefined;
     if (!mainSource) return;
 
     const { start, end } = dateRange;
@@ -228,7 +235,10 @@ export default function MapCanvas() {
       if (lastVisit >= start && firstVisit <= end) {
         inRange.push(f);
       } else {
-        outOfRange.push({ ...f, properties: { ...f.properties, opacity: 0.1 } });
+        outOfRange.push({
+          ...f,
+          properties: { ...f.properties, opacity: 0.1 },
+        });
       }
     }
 
@@ -236,8 +246,12 @@ export default function MapCanvas() {
     const outOfRangeCollection = { ...restaurantData, features: outOfRange };
 
     mainSource.setData(inRangeCollection);
-    (map.getSource(HEATMAP_SOURCE_ID) as mapboxgl.GeoJSONSource)?.setData(inRangeCollection);
-    (map.getSource(FADED_SOURCE_ID) as mapboxgl.GeoJSONSource)?.setData(outOfRangeCollection);
+    (map.getSource(HEATMAP_SOURCE_ID) as mapboxgl.GeoJSONSource)?.setData(
+      inRangeCollection,
+    );
+    (map.getSource(FADED_SOURCE_ID) as mapboxgl.GeoJSONSource)?.setData(
+      outOfRangeCollection,
+    );
   }, [dateRange, restaurantData]);
 
   // ── Heatmap visibility ────────────────────────────────────────────────────
@@ -245,7 +259,10 @@ export default function MapCanvas() {
     const map = mapRef.current;
     // Layer only exists after data loads — setup() syncs state for early toggles
     if (!map || !map.getLayer(L.heatmap)) return;
-    map.setPaintProperty(L.heatmap, "heatmap-opacity-transition", { duration: 300, delay: 0 });
+    map.setPaintProperty(L.heatmap, "heatmap-opacity-transition", {
+      duration: 300,
+      delay: 0,
+    });
     map.setPaintProperty(L.heatmap, "heatmap-opacity", showHeatmap ? 0.75 : 0);
   }, [showHeatmap]);
 
